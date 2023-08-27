@@ -3,8 +3,9 @@ import './App.css'
 import { initializeApp } from 'firebase/app';
 import { DocumentData, collectionGroup, getDocs, getFirestore } from 'firebase/firestore';
 import { User, getAuth, onAuthStateChanged } from 'firebase/auth';
-import MainComponent from '../Main/Main';
-import LoginComponent from '../Login/Login';
+import LoginComponent from './components/Login/Login';
+import MainComponent from './components/Main/Main';
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyA07dPvgrlnmLAAMwl8hl6N84OmcyQ-sco",
