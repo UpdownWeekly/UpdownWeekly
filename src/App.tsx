@@ -1,11 +1,9 @@
 import { useState, useEffect} from 'react'
 import './App.css'
 import { initializeApp } from 'firebase/app';
-import { DocumentData, collectionGroup, getDocs, getFirestore } from 'firebase/firestore';
 import { User, getAuth, onAuthStateChanged } from 'firebase/auth';
 import LoginComponent from './components/Login/Login';
 import MainComponent from './components/Main/Main';
-
 
 const firebaseConfig = {
   apiKey: "AIzaSyA07dPvgrlnmLAAMwl8hl6N84OmcyQ-sco",
@@ -17,47 +15,28 @@ const firebaseConfig = {
 }
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 const auth = getAuth(app);
 
 function App() {
-  const [data, setData] = useState<DocumentData[] | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
-
-    // Cleanup the listener on component unmount
     return () => unsubscribe();
   }, []);
   
-  useEffect(() => {
-    async function fetchData() {
-      const documents = await fetchCollectionGroup();
-      setData(documents);
-    }
-    fetchData();
-  }, []);
-
   if (user === null) {
     return <LoginComponent />;
   } else {
     return <MainComponent />;
   }
+
 }
 
 export default App;
 
-async function fetchCollectionGroup() {
-  const collectionGroupId = 'entries';
-  const query = collectionGroup(db, collectionGroupId);
-  const querySnapshot = await getDocs(query);
-  const documents = querySnapshot.docs.map(doc => doc.data());
-  return documents;
-}
 
 
 
