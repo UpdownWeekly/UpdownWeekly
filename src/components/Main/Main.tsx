@@ -4,22 +4,24 @@ import FirestoreService, { Group } from '../../services/firestore-service';
 import AuthService from '../../services/auth-service';
 import './Main.css'
 
-function MainComponent({ }) {
+const MainComponent = ({ user }: { user: User }) => {
+
 
   const [groups, setGroups] = useState<Group[]>([]);
-  const [group, setGroup] = useState<Group | null>(null);
+  const [group, setGroup] = useState<Group | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const firestoreService = FirestoreService.getInstance();
-      const authService = AuthService.getInstance();
-      const user = authService.getCurrentUser();
-      const groups = await firestoreService.getGroups(user!.uid);
-      setGroups(groups)
+      console.log(user);
+      if (user != null) {
+        console.log("fetching")
+        const firestoreService = FirestoreService.getInstance();
+        const groups = await firestoreService.getGroups(user.uid);
+        setGroups(groups)
+      }
     }
-
     fetchData();
-  }, []);
+  }, [user]);
 
   return (
     <div>
@@ -27,9 +29,9 @@ function MainComponent({ }) {
         <button onClick={handleLogout}>Logout</button>
       </div>
       <div className='sidebar'>
-      {groups.map((group, index) => (
-        <button onClick={() => setGroup(group)} className='group-button'>{group.name}</button>
-      ))}
+        {groups.map((group, index) => (
+          <button onClick={() => setGroup(group)} className='group-button'>{group.name}</button>
+        ))}
       </div>
       <div>
         {group?.name}

@@ -5,6 +5,7 @@ class AuthService {
   private auth: Auth;
   private googleProvider: GoogleAuthProvider;
   private currentUser: User | null = null;
+  private subscribers: ((user: User | null) => void)[] = [];
 
   private constructor() {
     this.auth = getAuth();
@@ -12,6 +13,7 @@ class AuthService {
 
     this.auth.onAuthStateChanged((user) => {
         this.currentUser = user;
+        this.notifySubscribers();
       });
   }
 
@@ -35,11 +37,17 @@ class AuthService {
     return signOut(this.auth);
   }
 
-  public onAuthChange(onUserChanged: (user: User | null) => void): void {
-    this.auth.onAuthStateChanged(onUserChanged);
+  public subscribe(onUserChanged: (user: User | null) => void): void {
+    this.subscribers.push(onUserChanged);
   }
 
-  
+  public unsubscribe(onUserChanged: (user: User | null) => void): void {
+    this.subscribers = this.subscribers.filter(sub => sub !== onUserChanged);
+  }
+
+  private notifySubscribers(): void {
+    this.subscribers.forEach(sub => sub(this.currentUser));
+  }
 }
 
 export default AuthService;
