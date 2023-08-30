@@ -9,7 +9,6 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-
     const onUserChanged = (user: User | null) => setUser(user);
     AuthService.getInstance().subscribe(onUserChanged);
 
@@ -17,17 +16,11 @@ function App() {
     return () => AuthService.getInstance().unsubscribe(onUserChanged);
   }, []);
 
-
   if (user === null) {
     return <LoginComponent />;
   } else {
     return <MainComponent user={user} />;
   }
-
 }
 
 export default App;
-
-
-
-

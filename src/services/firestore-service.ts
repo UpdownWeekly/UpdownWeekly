@@ -1,5 +1,5 @@
 import {
-    Timestamp,
+  Timestamp,
   collection,
   doc,
   getDoc,

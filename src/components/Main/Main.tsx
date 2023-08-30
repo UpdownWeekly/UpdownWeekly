@@ -6,9 +6,8 @@ import './Main.css'
 
 const MainComponent = ({ user }: { user: User }) => {
 
-
   const [groups, setGroups] = useState<Group[]>([]);
-  const [group, setGroup] = useState<Group | null>(null);
+  const [group, selectedGroup] = useState<Group | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
