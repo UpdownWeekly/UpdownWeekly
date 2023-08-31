@@ -7,7 +7,7 @@ import './Main.css'
 const MainComponent = ({ user }: { user: User }) => {
 
   const [groups, setGroups] = useState<Group[]>([]);
-  const [group, selectedGroup] = useState<Group | null>(null);
+  const [activeGroup, selectGroup] = useState<Group | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,11 +29,11 @@ const MainComponent = ({ user }: { user: User }) => {
       </div>
       <div className='sidebar'>
         {groups.map((group, index) => (
-          <button onClick={() => setGroup(group)} className='group-button'>{group.name}</button>
+          <button onClick={() => selectGroup(group)} className='group-button'>{group.name}</button>
         ))}
       </div>
       <div>
-        {group?.name}
+        {activeGroup?.name}
       </div>
     </div>
   );
