@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { User, getAuth, signOut } from 'firebase/auth';
 import FirestoreService, { Group } from '../../services/firestore-service';
-import AuthService from '../../services/auth-service';
 import './Main.css'
 
 const MainComponent = ({ user }: { user: User }) => {
@@ -28,7 +27,7 @@ const MainComponent = ({ user }: { user: User }) => {
         <button onClick={handleLogout}>Logout</button>
       </div>
       <div className='sidebar'>
-        {groups.map((group, index) => (
+        {groups.map((group) => (
           <button onClick={() => selectGroup(group)} className='group-button'>{group.name}</button>
         ))}
       </div>
