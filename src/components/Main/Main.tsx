@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { User, getAuth, signOut } from 'firebase/auth';
 import FirestoreService, { Group } from '../../services/firestore-service';
-import './Main.css'
+import './Main.css';
 
 const MainComponent = ({ user }: { user: User }) => {
 
@@ -30,6 +30,15 @@ const MainComponent = ({ user }: { user: User }) => {
         {groups.map((group) => (
           <button onClick={() => selectGroup(group)} className='group-button'>{group.name}</button>
         ))}
+      </div>
+      <div className='content'>
+       <div className='content-container'>
+        <div className='content-posts'></div>
+         <div className='content-input'>
+           <input type='text' id='message-input' placeholder='Type your message...'/>
+           <button id='send-button'>Send</button>
+         </div>
+       </div>
       </div>
       <div>
         {activeGroup?.name}

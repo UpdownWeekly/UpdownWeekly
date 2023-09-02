@@ -15,3 +15,26 @@
 .group-button {
     margin-bottom: 10px;
 }
+.content {
+  position:center;
+  margin: 10px;
+  width: 70%;
+  border: 3px solid red;
+  padding: 10px;
+  text-align: left;
+}
+.content-container {
+  width = 100%;
+  margin: 0 auto;
+  border: 1px solid green;
+  padding: 10px;
+}
+.content-posts {
+  flex:1;
+  padding: 5px;
+}
+.content-input {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
