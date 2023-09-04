@@ -6,34 +6,34 @@ users:
     profile_picture_url: string # ChatGPT suggestion, renamed
     group_ids: 
       - string # ChatGPT suggestion
-groups:
+groups (collection):
   group:
     group_name: string
-    weeks:
+    weeks (collection):
       week:
         created_at: timestamp
         week_number: number
         start_date: timestamp # ChatGPT suggestion
         end_date: timestamp # ChatGPT suggestion
-        entries:
+        entries (collection):
           entry:
             user_id: string
             highlight: string
             lowlight: string
             created_at: timestamp
-            comments: # ChatGPT suggestion
+            comments (collection): # ChatGPT suggestion
               comment: 
                 user_id: string
                 text: string
                 created_at: timestamp
-            likes: # ChatGPT suggestion, modified
+            likes (collection): # ChatGPT suggestion, modified
               like: 
                 user_id: string
     members: # ChatGPT suggestion, modified
       member:
         user_id: string
         role: string
-invitations: # ChatGPT suggestion
+invitations (collection): # ChatGPT suggestion
   invitation: 
     group_id: string
     invited_user_id: string

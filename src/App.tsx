@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import { User } from 'firebase/auth';
 import LoginComponent from './components/Login/Login';
-import MainComponent from './components/Main/Main';
 import AuthService from './services/auth-service';
+import Home from './components/Home/Home';
+import { Card } from './components/ui/card';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -19,7 +20,9 @@ function App() {
   if (user === null) {
     return <LoginComponent />;
   } else {
-    return <MainComponent user={user} />;
+    return (
+          <Home user={user} />
+    );
   }
 }
 

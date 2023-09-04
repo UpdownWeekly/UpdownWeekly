@@ -1,6 +1,7 @@
 import {
   Timestamp,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -34,9 +35,17 @@ class FirestoreService {
 
   async getGroups(uid: string) {
     const _collection = collection(db, "groups");
-    const _query = query(_collection, where("user_ids", "array-contains", uid));
+    const _query = query(_collection, where(`members.${uid}.user_id`, "==", uid));
     const querySnapshot = await getDocs(_query);
-    const groups = querySnapshot.docs.map((doc) => doc.data() as Group);
+  
+    const groups = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        name: data.group_name,
+        id: doc.id,
+      } as Group;
+    });
+  
     return groups;
   }
 
@@ -49,7 +58,7 @@ class FirestoreService {
   }
 
   async getEntriesPerWeek(groupId: string, weekId: string) {
-    const _collection = collection(db, "groups", groupId, "weeks", weekId);
+    const _collection = collection(db, "groups", groupId, "weeks", weekId, "entries");
     const _query = query(_collection);
     const querySnapshot = await getDocs(_query);
 
@@ -65,6 +74,28 @@ class FirestoreService {
 
     return entries;
   }
+
+  async createGroup(uid: string, groupName: string) {
+    const groupRef = collection(db, "groups");
+    const newGroupRef = doc(groupRef);
+  
+    await setDoc(newGroupRef, {
+      group_name: groupName,
+      members: {
+        [uid]: {
+          user_id: uid,
+          role: "admin",
+        },
+      },
+    });
+  }
+
+  async deleteGroup(groupId: string) {
+    const groupRef = doc(collection(db, "groups"), groupId);
+    await deleteDoc(groupRef);
+  }
+
+  
 }
 
 export interface Group {
