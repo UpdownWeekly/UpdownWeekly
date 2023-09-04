@@ -26,7 +26,6 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: { user: User, activeGrou
         }
     }
 
-
     const deleteGroup = async (group: Group) => {
         if (user != null) {
             const confirmDelete = window.confirm('Are you sure you want to delete this group?');
@@ -37,7 +36,6 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: { user: User, activeGrou
             }
         }
     }
-
 
     useEffect(() => {
         fetchGroups();
@@ -50,7 +48,6 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: { user: User, activeGrou
             fetchGroups();
         }
     };
-
 
     return (
         <div className="w-64 bg-gray-200 p-4">

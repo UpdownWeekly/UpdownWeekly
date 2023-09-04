@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import './App.css'
 import { User } from 'firebase/auth';
 import LoginComponent from './components/Login/Login';
 import AuthService from './services/auth-service';

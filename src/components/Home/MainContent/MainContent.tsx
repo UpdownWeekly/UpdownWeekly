@@ -23,9 +23,9 @@ const MainContent = ({ activeGroup }: { activeGroup: Group | null }) => {
     <div className='content w-full p-4'>
       <div className='content-container'>
         <div className='content-posts'></div>
-        <div className='flex justify-center w-full'>
-          <h1 className='text-2xl font-bold'>{activeGroup?.name}</h1>
-        </div>
+          <div className='flex justify-center w-full'>
+            <h1 className='text-2xl font-bold'>{activeGroup?.name}</h1>
+          </div>
         <Card>
           <CardHeader>
             <CardTitle>Card Title</CardTitle>
