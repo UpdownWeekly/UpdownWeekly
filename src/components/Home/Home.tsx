@@ -14,10 +14,10 @@ const Home = ({ user }: { user: User }) => {
   return (
     <div>
       <div className="flex flex-col h-screen">
-        <Header />
+        <Header user={user} />
         <div className="flex flex-1">
           <Sidebar user={user} activeGroup={activeGroup} setActiveGroup={setActiveGroup} />
-          <MainContent activeGroup={activeGroup} />
+          <MainContent activeGroup={activeGroup} user={user} />
         </div>
       </div>
     </div>

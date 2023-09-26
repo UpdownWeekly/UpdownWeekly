@@ -11,8 +11,6 @@ groups (collection):
     group_name: string
     weeks (collection):
       week:
-        created_at: timestamp
-        week_number: number
         start_date: timestamp # ChatGPT suggestion
         end_date: timestamp # ChatGPT suggestion
         entries (collection):

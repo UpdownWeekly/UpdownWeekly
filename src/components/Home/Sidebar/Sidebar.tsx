@@ -3,10 +3,26 @@ import { User } from 'firebase/auth';
 import FirestoreService, { Group } from '@/services/firestore-service';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@radix-ui/react-separator';
-import { Cross1Icon, Cross2Icon, PlusIcon } from '@radix-ui/react-icons';
+import { DotsVerticalIcon, PlusIcon } from '@radix-ui/react-icons';
+import {
+    DropdownMenu,
 
-const Sidebar = ({ user, activeGroup, setActiveGroup }: { user: User, activeGroup: Group | null, setActiveGroup: (group: Group) => void }) => {
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Separator } from '@/components/ui/separator';
+
+type SidebarProps = {
+    user: User,
+    activeGroup: Group | null,
+    setActiveGroup: (group: Group) => void
+};
+
+const Sidebar = ({ user, activeGroup, setActiveGroup }: SidebarProps) => {
     const [groups, setGroups] = useState<Group[]>([]);
     const [newGroupName, setNewGroupName] = useState('');
 
@@ -28,12 +44,11 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: { user: User, activeGrou
 
     const deleteGroup = async (group: Group) => {
         if (user != null) {
-            const confirmDelete = window.confirm('Are you sure you want to delete this group?');
-            if (confirmDelete) {
-                const firestoreService = FirestoreService.getInstance();
-                await firestoreService.deleteGroup(group.id);
-                fetchGroups();
-            }
+
+            const firestoreService = FirestoreService.getInstance();
+            await firestoreService.deleteGroup(group.id);
+            fetchGroups();
+
         }
     }
 
@@ -52,11 +67,33 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: { user: User, activeGrou
     return (
         <div className="w-64 bg-gray-200 p-4">
             <div className='flex flex-col space-y-4'>
-                <h1 className='text-2xl font-bold'>Groups</h1>
                 {groups.map((group) => (
-                    <div className='flex space-x-2 w-full'>
-                        <Button className='flex-grow group-button' variant={activeGroup?.id === group.id ? "default" : "outline"} onClick={() => handleClick(group)}>{group.name}</Button>
-                        <Button onClick={() => deleteGroup(group)} variant='destructive'> <Cross2Icon></Cross2Icon> </Button>
+                    <div key={group.id} className='flex space-x-2 w-full'>
+                        <Button style={{ justifyContent: 'flex-start' }} className={`flex-grow ${activeGroup?.id === group.id ? "bg-accent text-accent-foreground" : ""}`} variant="ghost" onClick={() => handleClick(group)}>{group.name}</Button>
+                        <Dialog>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger><DotsVerticalIcon></DotsVerticalIcon></DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuLabel>{group.name}</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DialogTrigger asChild>
+                                        <DropdownMenuItem>delete</DropdownMenuItem>
+                                    </DialogTrigger>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+                                    <DialogDescription>
+                                        This action cannot be undone. Are you sure you want to permanently
+                                        delete this file from our servers?
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <DialogFooter>
+                                    <Button type="submit" onClick={() => deleteGroup(group)}>Confirm</Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
                     </div>
                 ))}
                 <Separator></Separator>

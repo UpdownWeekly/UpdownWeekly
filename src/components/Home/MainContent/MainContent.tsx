@@ -1,15 +1,45 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
-import { Input } from '../../ui/input';
 import { Button } from '../../ui/button';
-import FirestoreService, { Group, Entry } from '../../../services/firestore-service';
+import FirestoreService, { Entry, Group } from '../../../services/firestore-service';
 import { useState, useEffect } from 'react';
 import Week from './Week/Week';
+import { Textarea } from '@/components/ui/textarea';
+import { User } from 'firebase/auth';
 
 const firestoreService = FirestoreService.getInstance();
 
-const MainContent = ({ activeGroup }: { activeGroup: Group | null }) => {
+const MainContent = ({ activeGroup, user }: { activeGroup: Group | null, user: User }) => {
 
   const [weeks, setWeeks] = useState<string[] | null>(null);
+  const [hasEntryThisWeek, setHasEntryThisWeek] = useState(false);
+  const [highlight, setHighlight] = useState('');
+  const [lowlight, setLowlight] = useState('');
+  const [refreshContent, setRefreshContent] = useState(false);
+
+
+  const handleSend = async () => {
+    if (activeGroup && user) {
+      await firestoreService.createEntry(activeGroup.id, user.uid, highlight, lowlight);
+      setHighlight('');
+      setLowlight('');
+      setRefreshContent(prevState => !prevState); // Add this line
+    }
+  };
+
+  const fetchHasEntryThisWeek = async () => {
+    if (activeGroup) {
+      try {
+        const hasEntry = await firestoreService.userMadeEntryThisWeek(activeGroup.id, user.uid);
+        setHasEntryThisWeek(hasEntry);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchHasEntryThisWeek();
+  }, [activeGroup, user, refreshContent]);
 
   useEffect(() => {
     if (activeGroup) {
@@ -17,31 +47,42 @@ const MainContent = ({ activeGroup }: { activeGroup: Group | null }) => {
         .then((weeks) => setWeeks(weeks))
         .catch((error) => console.error(error));
     }
-  }, [activeGroup]);
+  }, [activeGroup, refreshContent]);
+
+
 
   return (
-    <div className='content w-full p-4'>
-      <div className='content-container'>
-        <div className='content-posts'></div>
-          <div className='flex justify-center w-full'>
-            <h1 className='text-2xl font-bold'>{activeGroup?.name}</h1>
-          </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Card Title</CardTitle>
-            <CardDescription>Card Description</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className='flex space-x-4'>
-              <Input type='text' id='message-input' placeholder='Type your message...' />
-              <Button id='send-button'>Send</Button>
-            </div>
-          </CardContent>
-        </Card>
+    <div className='content w-full p-4 space-y-4'>
+      <div className='content-container space-y-8'>
+        <div className='flex justify-center w-full'>
+          <h1 className='text-2xl font-bold'>{activeGroup?.name}</h1>
+        </div>
+        {!hasEntryThisWeek && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-center">New Entry</CardTitle>
+              <CardDescription className="text-center">Share what happened last week.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className='flex flex-col md:flex-row justify-between'>
+                <div className='w-full md:w-1/2 m-2'>
+                  <h3 className='text-center font-bold'>Highlight</h3>
+                  <Textarea id='highlight-input' placeholder='Type your highlight...' value={highlight} onChange={(e) => setHighlight(e.target.value)} />
+                </div>
+                <div className='w-full md:w-1/2 m-2'>
+                  <h3 className='text-center font-bold'>Lowlight</h3>
+                  <Textarea id='lowlight-input' placeholder='Type your lowlight...' value={lowlight} onChange={(e) => setLowlight(e.target.value)} />
+                </div>
+              </div>
+              <div className='flex justify-center mt-4'>
+                <Button id='send-button' onClick={handleSend}>Send</Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
       {weeks?.map((weekId) => (
-        <Week groupId={activeGroup?.id!} weekId={weekId} />
-      ))}
+        <Week key={weekId} groupId={activeGroup?.id!} weekId={weekId} user={user} fetchHasEntryThisWeek={fetchHasEntryThisWeek} refreshContent={refreshContent}/>      ))}
     </div>
   );
 }
