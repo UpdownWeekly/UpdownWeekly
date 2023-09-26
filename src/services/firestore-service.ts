@@ -185,6 +185,19 @@ class FirestoreService {
     await addDoc(commentsCollection, comment);
   }
 
+  async removeComment(
+    groupId: string,
+    weekId: string,
+    entryId: string,
+    commentId: string,
+  ) {
+    const commentsCollection = collection(
+      db,
+      `groups/${groupId}/weeks/${weekId}/entries/${entryId}/comments`,
+    );
+    await deleteDoc(doc(commentsCollection, commentId));
+  }
+
   async createLike(
     groupId: string,
     weekId: string,
@@ -200,6 +213,25 @@ class FirestoreService {
       `groups/${groupId}/weeks/${weekId}/entries/${entryId}/likes`,
     );
     await addDoc(likesCollection, like);
+  }
+
+  async removeLike(
+    groupId: string,
+    weekId: string,
+    entryId: string,
+    userId: string,
+  ) {
+    const likesCollection = collection(
+      db,
+      `groups/${groupId}/weeks/${weekId}/entries/${entryId}/likes`,
+    );
+    const likeQuery = query(likesCollection, where("user_id", "==", userId));
+    const likeSnapshot = await getDocs(likeQuery);
+
+    if (!likeSnapshot.empty) {
+      const likeDoc = likeSnapshot.docs[0];
+      await deleteDoc(doc(db, `groups/${groupId}/weeks/${weekId}/entries/${entryId}/likes`, likeDoc.id));
+    }
   }
 
 

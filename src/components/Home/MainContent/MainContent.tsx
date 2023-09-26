@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import Week from './Week/Week';
 import { Textarea } from '@/components/ui/textarea';
 import { User } from 'firebase/auth';
+import { Send } from 'lucide-react';
 
 const firestoreService = FirestoreService.getInstance();
 
@@ -66,16 +67,16 @@ const MainContent = ({ activeGroup, user }: { activeGroup: Group | null, user: U
             <CardContent>
               <div className='flex flex-col md:flex-row justify-between'>
                 <div className='w-full md:w-1/2 m-2'>
-                  <h3 className='text-center font-bold'>Highlight</h3>
+                  <h3 className='text-center font-bold mb-2'>Highlight</h3>
                   <Textarea id='highlight-input' placeholder='Type your highlight...' value={highlight} onChange={(e) => setHighlight(e.target.value)} />
                 </div>
                 <div className='w-full md:w-1/2 m-2'>
-                  <h3 className='text-center font-bold'>Lowlight</h3>
+                  <h3 className='text-center font-bold mb-2'>Lowlight</h3>
                   <Textarea id='lowlight-input' placeholder='Type your lowlight...' value={lowlight} onChange={(e) => setLowlight(e.target.value)} />
                 </div>
               </div>
-              <div className='flex justify-center mt-4'>
-                <Button id='send-button' onClick={handleSend}>Send</Button>
+              <div className='flex justify-end mt-4 w-full'>
+                <Button id='send-button' variant={'ghost'} onClick={handleSend}><Send/></Button>
               </div>
             </CardContent>
           </Card>

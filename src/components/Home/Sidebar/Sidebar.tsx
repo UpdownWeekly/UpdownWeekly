@@ -3,7 +3,7 @@ import { User } from 'firebase/auth';
 import FirestoreService, { Group } from '@/services/firestore-service';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { DotsVerticalIcon, PlusIcon } from '@radix-ui/react-icons';
+import { DotsVerticalIcon, PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 import {
     DropdownMenu,
 
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
+import { Trash } from 'lucide-react';
 
 type SidebarProps = {
     user: User,
@@ -77,7 +78,7 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: SidebarProps) => {
                                     <DropdownMenuLabel>{group.name}</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DialogTrigger asChild>
-                                        <DropdownMenuItem>delete</DropdownMenuItem>
+                                        <DropdownMenuItem> <Trash className="mr-2 h-4 w-4" /> delete</DropdownMenuItem>
                                     </DialogTrigger>
                                 </DropdownMenuContent>
                             </DropdownMenu>

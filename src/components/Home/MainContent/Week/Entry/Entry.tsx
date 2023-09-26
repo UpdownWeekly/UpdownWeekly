@@ -6,7 +6,16 @@ import { User } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import CommentComponent from './Comment/Comment';
 import LikeComponent from './Likes/Likes';
-import { TrashIcon } from '@radix-ui/react-icons';
+import React from 'react';
+import { Heart, HeartOff, Trash } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion"
+import { Separator } from '@radix-ui/react-dropdown-menu';
 
 interface EntryComponentProps {
     entry: Entry;
@@ -24,15 +33,23 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
     const [comments, setComments] = useState<Comment[]>([]);
     const [commentInput, setCommentInput] = useState<string>('');
 
-    const fetchLikesAndComments = async () => {
+    const fetchLikes = async () => {
         const likes = await FirestoreService.getInstance().getLikes(groupId!, weekId!, entry.id);
-        const comments = await FirestoreService.getInstance().getComments(groupId!, weekId!, entry.id);
         setLikes(likes);
+    };
+
+    const fetchComments = async () => {
+        const comments = await FirestoreService.getInstance().getComments(groupId!, weekId!, entry.id);
         setComments(comments);
     };
 
-    useEffect(() => {
+    const fetchLikesAndComments = async () => {
+        fetchLikes();
+        fetchComments();
+    };
 
+
+    useEffect(() => {
         fetchLikesAndComments();
     }, [entry]);
 
@@ -40,66 +57,82 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
         if (commentInput !== '') {
             await FirestoreService.getInstance().createComment(groupId!, weekId!, entry.id, user.uid, commentInput);
             setCommentInput('');
-            fetchLikesAndComments();
+            fetchComments();
         }
     };
 
     return (
         <>
             <div className="relative" key={entry.id}>
-                {entry.userId === user.uid &&
-                    <Button variant={'ghost'} className="absolute top-0 right-0" onClick={async () => {
-                        await FirestoreService.getInstance().deleteEntry(groupId!, weekId!, entry.id);
-                        setRefreshEntries(prevState => !prevState); // Toggle refreshEntries state
-                        fetchHasEntryThisWeek();
-                    }}><TrashIcon></TrashIcon></Button>
-                }
                 <Card>
-                    <CardHeader className="flex">
-                        <CardTitle className="text-center"> <p>{userName}</p>
+                    <CardHeader className="flex items-center">
+                        <CardTitle className="w-full flex justify-between items-center">
+                            <p>{userName}</p>
+                            {entry.userId === user.uid &&
+                                <Button variant={'ghost'} onClick={async () => {
+                                    await FirestoreService.getInstance().deleteEntry(groupId!, weekId!, entry.id);
+                                    setRefreshEntries(prevState => !prevState); // Toggle refreshEntries state
+                                    fetchHasEntryThisWeek();
+                                }}><Trash /></Button>
+                            }
                         </CardTitle>
-                        <CardDescription className="text-center">
+                        <CardDescription>
                             {entry.createdAt && new Date(entry.createdAt.seconds * 1000).toLocaleString()}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="flex flex-col md:flex-row justify-between">
-                        <div className="'w-full md:w-1/2 m-2' text-center">
-                            <h3 className='font-bold'>Highlight</h3>
+                        <div className="'w-full md:w-1/2 m-2 text-center">
+                            <h3 className='font-bold mb-2'>Highlight</h3>
                             <p>{entry.highlight}</p>
                         </div>
-                        <div className="'w-full md:w-1/2 m-2' text-center">
-                            <h3 className='font-bold'>Lowlight</h3>
+                        <div className="'w-full md:w-1/2 m-2 text-center">
+                            <h3 className='font-bold mb-2' >Lowlight</h3>
                             <p>{entry.lowlight}</p>
                         </div>
                     </CardContent>
                     <CardFooter className='flex-col'>
-                        <div className='flex'>
-                            <h3>Likes: </h3>
-                            {likes.map((like) => (<>
-                                <LikeComponent key={like.user_id} like={like} />
-                            </>
-                            ))}
-                            {!likes.some(like => like.user_id === user.uid) && 
-                                <Button onClick={async () => {
+                        <div className='w-full flex items-center justify-between'>
+                            <div className="flex h-5 items-center space-x-4 text-sm">
+                                <h3>Liked by: </h3>
+                                {likes.map((like) => (
+                                    <React.Fragment key={like.user_id}>
+                                        <LikeComponent like={like} />
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                            <Button variant={'ghost'} onClick={async () => {
+                                if (!likes.some(like => like.user_id === user.uid)) {
                                     await FirestoreService.getInstance().createLike(groupId!, weekId!, entry.id, user.uid);
-                                    fetchLikesAndComments();
-                                }}>Like</Button>
-                            }
+                                    fetchLikes();
+
+                                } else {
+                                    await FirestoreService.getInstance().removeLike(groupId!, weekId!, entry.id, user.uid);
+                                    fetchLikes();
+                                }
+                            }}>{likes.some(like => like.user_id === user.uid) ? <HeartOff /> : <Heart />}</Button>
                         </div>
-                        <div className='flex'>
-                            <h3>Comments:</h3>
-                            {comments.map((comment, index) => (
-                                <>
-                                    <div key={index}>
-                                        <CommentComponent comment={comment} />
-                                    </div>
-                                </>
-                            ))}
+
+                        <div className='w-full flex items-start'>
+                            <Accordion type="single" collapsible className='flex-grow'>
+                                <AccordionItem value="item-1" className='w-full'>
+                                    <AccordionTrigger>Comments</AccordionTrigger>
+                                    <AccordionContent>
+                                        {comments.map((comment, index) => (
+                                            <React.Fragment key={comment.created_at.toLocaleTimeString()}>
+                                                <div key={index}>
+                                                    <CommentComponent comment={comment} />
+                                                </div>
+                                            </React.Fragment>))}
+                                        <div className='flex'>
+                                            <Input type='text' value={commentInput} onChange={(e) => setCommentInput(e.target.value)} placeholder='Add a comment...' />
+                                            <Button onClick={handleCommentSubmit}>Submit</Button>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+
                         </div>
-                        <div className='flex'>
-                            <input type='text' value={commentInput} onChange={(e) => setCommentInput(e.target.value)} placeholder='Add a comment...' />
-                            <Button onClick={handleCommentSubmit}>Submit</Button>
-                        </div>
+
                     </CardFooter>
                 </Card>
             </div>

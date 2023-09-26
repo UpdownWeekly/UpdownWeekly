@@ -38,6 +38,7 @@ const Week = ({ groupId, weekId, user, fetchHasEntryThisWeek, refreshContent }: 
     <>
       {entries.map((entry) => (
         <EntryComponent
+          key={entry.id}
           entry={entry}
           user={user}
           setRefreshEntries={setRefreshEntries}
