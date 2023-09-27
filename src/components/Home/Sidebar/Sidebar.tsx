@@ -16,6 +16,8 @@ import {
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { Trash } from 'lucide-react';
+import React from 'react';
+import { DialogClose } from '@radix-ui/react-dialog';
 
 type SidebarProps = {
     user: User,
@@ -45,11 +47,9 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: SidebarProps) => {
 
     const deleteGroup = async (group: Group) => {
         if (user != null) {
-
             const firestoreService = FirestoreService.getInstance();
             await firestoreService.deleteGroup(group.id);
             fetchGroups();
-
         }
     }
 
@@ -66,42 +66,58 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: SidebarProps) => {
     };
 
     return (
-        <div className="w-64 bg-gray-200 p-4">
-            <div className='flex flex-col space-y-4'>
+        <div className="w-full p-4">
+            <div className='flex flex-col space-y-2'>
                 {groups.map((group) => (
-                    <div key={group.id} className='flex space-x-2 w-full'>
-                        <Button style={{ justifyContent: 'flex-start' }} className={`flex-grow ${activeGroup?.id === group.id ? "bg-accent text-accent-foreground" : ""}`} variant="ghost" onClick={() => handleClick(group)}>{group.name}</Button>
-                        <Dialog>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger><DotsVerticalIcon></DotsVerticalIcon></DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    <DropdownMenuLabel>{group.name}</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DialogTrigger asChild>
-                                        <DropdownMenuItem> <Trash className="mr-2 h-4 w-4" /> delete</DropdownMenuItem>
-                                    </DialogTrigger>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                            <DialogContent>
-                                <DialogHeader>
-                                    <DialogTitle>Are you sure absolutely sure?</DialogTitle>
-                                    <DialogDescription>
-                                        This action cannot be undone. Are you sure you want to permanently
-                                        delete this file from our servers?
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <DialogFooter>
-                                    <Button type="submit" onClick={() => deleteGroup(group)}>Confirm</Button>
-                                </DialogFooter>
-                            </DialogContent>
-                        </Dialog>
-                    </div>
+                    <React.Fragment key={group.id}>
+                        <div className='flex w-full'>
+                            <Button style={{ justifyContent: 'flex-start' }} className={`flex-grow ${activeGroup?.id === group.id ? "bg-accent text-accent-foreground" : ""}`} variant="ghost" onClick={() => handleClick(group)}>{group.name}</Button>
+                            <Dialog>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger><DotsVerticalIcon></DotsVerticalIcon></DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        <DropdownMenuLabel>{group.name}</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DialogTrigger asChild>
+                                            <DropdownMenuItem> <Trash className="mr-2 h-4 w-4" /> delete</DropdownMenuItem>
+                                        </DialogTrigger>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+                                        <DialogDescription>
+                                            This action cannot be undone. Are you sure you want to permanently
+                                            delete this file from our servers?
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <DialogFooter>
+                                        <Button type="submit" onClick={() => deleteGroup(group)}>Confirm</Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
+                        <Separator></Separator>
+                    </React.Fragment>
                 ))}
-                <Separator></Separator>
-                <div className='flex space-x-2'>
-                    <Input type="text" value={newGroupName} onChange={handleInputChange} />
-                    <Button onClick={onCreateGroup}> <PlusIcon></PlusIcon> </Button>
-                </div>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button><PlusIcon></PlusIcon></Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Create Group</DialogTitle>
+                        </DialogHeader>
+                        <DialogDescription>
+                            <Input type="text" value={newGroupName} onChange={handleInputChange} />
+                        </DialogDescription>
+                        <DialogFooter>
+                            <DialogClose>
+                                <Button onClick={onCreateGroup}>Submit</Button>
+                            </DialogClose>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
 
             </div>
 

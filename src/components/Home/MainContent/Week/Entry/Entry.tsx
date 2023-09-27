@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import CommentComponent from './Comment/Comment';
 import LikeComponent from './Likes/Likes';
 import React from 'react';
-import { Heart, HeartOff, Trash } from 'lucide-react';
+import { Heart, HeartOff, Send, Trash } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
     Accordion,
@@ -124,8 +124,8 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
                                                 </div>
                                             </React.Fragment>))}
                                         <div className='flex'>
-                                            <Input type='text' value={commentInput} onChange={(e) => setCommentInput(e.target.value)} placeholder='Add a comment...' />
-                                            <Button onClick={handleCommentSubmit}>Submit</Button>
+                                            <Input type='text' className='focus-visible:ring-0' value={commentInput} onChange={(e) => setCommentInput(e.target.value)} placeholder='Add a comment...' />
+                                            <Button variant={'ghost'} onClick={handleCommentSubmit}><Send></Send></Button>
                                         </div>
                                     </AccordionContent>
                                 </AccordionItem>
