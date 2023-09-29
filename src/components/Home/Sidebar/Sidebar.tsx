@@ -1,4 +1,4 @@
-import { useState, useEffect, SetStateAction, memo } from 'react';
+import { useState, SetStateAction, memo } from 'react';
 import { User } from 'firebase/auth';
 import FirestoreService, { Group } from '@/services/firestore-service';
 import { Button } from '@/components/ui/button';
@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { DotsVerticalIcon, PlusIcon } from '@radix-ui/react-icons';
 import {
     DropdownMenu,
-
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
@@ -54,8 +53,14 @@ const Sidebar = ({ user, groups, fetchGroups, activeGroup, setActiveGroup }: Sid
     const deleteGroup = async (group: Group) => {
         if (user != null) {
             const firestoreService = FirestoreService.getInstance();
-            await firestoreService.deleteGroup(group.id);
-            fetchGroups();
+            try {
+                await firestoreService.deleteGroup(group.id);
+                fetchGroups();
+                setDeleteDialogOpen(false)
+            } catch (error) {
+
+            }
+
         }
     }
 
@@ -127,14 +132,14 @@ const Sidebar = ({ user, groups, fetchGroups, activeGroup, setActiveGroup }: Sid
                             <Dialog open={deleteDialogOpen} onOpenChange={() => setDeleteDialogOpen(false)}>
                                 <DialogContent>
                                     <DialogHeader>
-                                        <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+                                        <DialogTitle>Delete group: {groupToDelete?.name}</DialogTitle>
                                         <DialogDescription>
-                                            This action cannot be undone. Are you sure you want to permanently
-                                            delete this file from our servers?
+                                            This action cannot be undone. <br /> Are you sure you want to permanently
+                                            delete this group?
                                         </DialogDescription>
                                     </DialogHeader>
                                     <DialogFooter>
-                                        <Button type="submit" onClick={() => groupToDelete && deleteGroup(groupToDelete)}>Confirm</Button>                                    </DialogFooter>
+                                        <Button type="submit" onClick={() => groupToDelete && deleteGroup(groupToDelete)}>delete group</Button>                                    </DialogFooter>
                                 </DialogContent>
                             </Dialog>
 
@@ -142,8 +147,8 @@ const Sidebar = ({ user, groups, fetchGroups, activeGroup, setActiveGroup }: Sid
                                 <DialogContent>
                                     <DialogHeader>
                                         <DialogTitle>Add members to {group.name}</DialogTitle>
-                                        <form onSubmit={async (e) =>  { 
-                                            if (groupToAddMember)  {
+                                        <form onSubmit={async (e) => {
+                                            if (groupToAddMember) {
                                                 await handleAddMember(e, groupToAddMember.id);
                                             }
                                         }}>

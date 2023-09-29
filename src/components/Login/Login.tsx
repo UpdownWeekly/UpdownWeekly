@@ -7,7 +7,7 @@ function LoginComponent() {
         const authService = AuthService.getInstance();
         const firestoreService = FirestoreService.getInstance();
         const user = await authService.loginWithGoogle();
-        await firestoreService.createUser(user.uid, user.displayName!, user.email!)
+        await firestoreService.createUser(user.uid, user.displayName!, user.email!, user.photoURL)
     }
 
     return (

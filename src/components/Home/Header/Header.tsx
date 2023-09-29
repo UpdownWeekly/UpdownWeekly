@@ -20,8 +20,8 @@ const Header = ({ user }: { user: User }) => {
         <h2 className='text-lg font-bold'>{user.displayName}</h2>
         <DropdownMenu>
           <DropdownMenuTrigger> <Avatar>
-            <AvatarImage alt="@shadcn" />
-            <AvatarFallback></AvatarFallback>
+            <AvatarImage src={user.photoURL || ''} alt="@shadcn" />
+            <AvatarFallback style={{color: 'black'}}>{user.displayName ? user.displayName[0].toUpperCase() : ''}</AvatarFallback>
           </Avatar></DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>{user.displayName}</DropdownMenuLabel>

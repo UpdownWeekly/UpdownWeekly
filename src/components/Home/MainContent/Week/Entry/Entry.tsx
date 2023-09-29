@@ -15,6 +15,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface EntryComponentProps {
     entry: Entry;
@@ -31,6 +32,8 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
     const [comments, setComments] = useState<Comment[]>([]);
     const [commentInput, setCommentInput] = useState<string>('');
     const [userName, setUserName] =  useState<string>('');
+    const [userPhotoUrl, setUserPhotoUrl] =  useState<string>('');
+
 
     const fetchLikes = async () => {
         const likes = await FirestoreService.getInstance().getLikes(groupId!, weekId!, entry.id);
@@ -50,6 +53,7 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
     const fetchUser = async () => {
         const user = await FirestoreService.getInstance().getUser(entry.userId);
         setUserName(user?.name);
+        setUserPhotoUrl(user?.photoUrl);
     };
 
     useEffect(() => {
@@ -75,7 +79,14 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
                 <Card>
                     <CardHeader className="flex items-center">
                         <CardTitle className="w-full flex justify-between items-center">
+                            <div className='flex items-center space-x-2'>
+                            <Avatar>
+                                <AvatarImage src={userPhotoUrl}></AvatarImage>
+                                <AvatarFallback style={{color: 'black'}}>{userName ? userName[0].toUpperCase() : ''}</AvatarFallback>
+                            </Avatar>
                             <p>{userName}</p>
+                            </div>
+                          
                             {entry.userId === user.uid &&
                                 <Button variant={'ghost'} onClick={async () => {
                                     await FirestoreService.getInstance().deleteEntry(groupId!, weekId!, entry.id);

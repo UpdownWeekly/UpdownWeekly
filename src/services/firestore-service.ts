@@ -38,7 +38,7 @@ class FirestoreService {
     await deleteDoc(entryRef);
   }
 
-  async createUser(uid: string, displayName: string, email: string) {
+  async createUser(uid: string, displayName: string, email: string, photoUrl: string | null) {
     const userRef = doc(db, "users", uid);
     const userDoc = await getDoc(userRef);
 
@@ -46,6 +46,7 @@ class FirestoreService {
       await setDoc(userRef, {
         "name": displayName,
         "email": email,
+        "photo_url": photoUrl,
       });
     }
   }
@@ -132,10 +133,16 @@ class FirestoreService {
       return {
         name: data.name,
         email: data.email,
+        photoUrl: data.photo_url,
       };
     }
 
     return null;
+  }
+
+  async updateUserPhotoUrl(userId: string, photoUrl: string) {
+    const userRef = doc(db, "users", userId);
+    await updateDoc(userRef, { photo_url: photoUrl });
   }
 
   async getLikes(groupId: string, weekId: string, entryId: string) {

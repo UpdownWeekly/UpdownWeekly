@@ -28,6 +28,19 @@ const Home = ({ user }: { user: User }) => {
   }, [user]);
 
   useEffect(() => {
+    if (user) {
+      const fetchAndUpdateUserPhotoUrl = async () => {
+        const firestoreService = FirestoreService.getInstance();
+        const firestoreUser = await firestoreService.getUser(user.uid);
+        if (!firestoreUser?.photoUrl && user.photoURL) {
+          await firestoreService.updateUserPhotoUrl(user.uid, user.photoURL);
+        }
+      };
+      fetchAndUpdateUserPhotoUrl();
+    }
+  }, [user]);
+
+  useEffect(() => {
 
     const storedActiveGroup = localStorage.getItem('activeGroup');
     if (storedActiveGroup) {
