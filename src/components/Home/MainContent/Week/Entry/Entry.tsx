@@ -110,9 +110,8 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
                         </div>
                     </CardContent>
                     <CardFooter className='flex-col'>
-                        <div className='w-full flex items-center justify-between'>
-                            <div className="flex h-5 items-center space-x-4 text-sm">
-                                <h3>Liked by: </h3>
+                        <div className='w-full flex items-center justify-end'>
+                            <div className="flex h-5 items-center space-x-1 text-sm">
                                 {likes.map((like) => (
                                     <React.Fragment key={like.user_id}>
                                         <LikeComponent like={like} />
