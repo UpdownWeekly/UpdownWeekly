@@ -1,4 +1,3 @@
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import AuthService from '../../services/auth-service';
 import FirestoreService from '../../services/firestore-service';
 

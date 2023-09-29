@@ -15,7 +15,6 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Separator } from '@radix-ui/react-dropdown-menu';
 
 interface EntryComponentProps {
     entry: Entry;

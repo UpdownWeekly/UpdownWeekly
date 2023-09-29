@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
-import FirestoreService, { Entry, Group } from '../../../services/firestore-service';
+import FirestoreService, { Group } from '../../../services/firestore-service';
 import { useState, useEffect } from 'react';
 import Week from './Week/Week';
 import { Textarea } from '@/components/ui/textarea';

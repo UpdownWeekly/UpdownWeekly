@@ -3,7 +3,7 @@ import { User } from 'firebase/auth';
 import FirestoreService, { Group } from '@/services/firestore-service';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { DotsVerticalIcon, PlusIcon, TrashIcon } from '@radix-ui/react-icons';
+import { DotsVerticalIcon, PlusIcon } from '@radix-ui/react-icons';
 import {
     DropdownMenu,
 

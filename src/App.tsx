@@ -3,7 +3,6 @@ import { User } from 'firebase/auth';
 import LoginComponent from './components/Login/Login';
 import AuthService from './services/auth-service';
 import Home from './components/Home/Home';
-import { Card } from './components/ui/card';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);

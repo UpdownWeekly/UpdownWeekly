@@ -6,7 +6,6 @@ import EntryComponent from './Entry/Entry';
 const Week = ({ groupId, weekId, user, fetchHasEntryThisWeek, refreshContent }: { groupId: string | null, weekId: string | null, user: User, fetchHasEntryThisWeek: () => Promise<void>, refreshContent: boolean }) => {
 
   const [entries, setEntries] = useState<Entry[]>([]);
-  const [users, setUsers] = useState<{ [key: string]: { name: string } }>({});
   const [refreshEntries, setRefreshEntries] = useState(false);
 
 
@@ -25,7 +24,6 @@ const Week = ({ groupId, weekId, user, fetchHasEntryThisWeek, refreshContent }: 
           }
         }
         setEntries(entries);
-        setUsers(users);
       } catch (error) {
         console.error('Error fetching entries:', error);
       }
