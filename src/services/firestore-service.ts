@@ -218,8 +218,9 @@ class FirestoreService {
     const comments = commentsSnapshot.docs.map((doc) => {
       const data = doc.data();
       return {
-        ...data,
-        created_at: data.created_at.toDate(),
+        userId: data.user_id,
+        text: data.text,
+        createdAt: data.created_at.toDate(),
       };
     });
 
@@ -432,7 +433,7 @@ export type Entry = {
 export type Comment = {
   userId: string;
   text: string;
-  created_at: Date;
+  createdAt: Date;
 };
 
 export type Like = {

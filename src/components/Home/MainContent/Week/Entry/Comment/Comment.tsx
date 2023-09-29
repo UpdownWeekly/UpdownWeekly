@@ -20,7 +20,7 @@ const CommentComponent: React.FC<CommentProps> = (props) => {
 
     return (
         <div>
-            {userName}: {props.comment.text} ({props.comment.created_at.toLocaleTimeString()})
+            {userName}: {props.comment.text} ({props.comment.createdAt.toLocaleTimeString()})
         </div>
     );
 };

@@ -136,7 +136,7 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
                                     <AccordionTrigger>Comments</AccordionTrigger>
                                     <AccordionContent>
                                         {comments.map((comment, index) => (
-                                            <React.Fragment key={comment.created_at.toLocaleTimeString()}>
+                                            <React.Fragment key={comment.createdAt.toLocaleTimeString()}>
                                                 <div key={index}>
                                                     <CommentComponent comment={comment} />
                                                 </div>
