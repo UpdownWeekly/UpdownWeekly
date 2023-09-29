@@ -23,14 +23,14 @@ interface EntryComponentProps {
     fetchHasEntryThisWeek: () => Promise<void>;
     groupId: string | null;
     weekId: string | null;
-    userName: string | null;
 }
 
-const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek, groupId, weekId, userName }: EntryComponentProps) => {
+const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek, groupId, weekId }: EntryComponentProps) => {
 
     const [likes, setLikes] = useState<Like[]>([]);
     const [comments, setComments] = useState<Comment[]>([]);
     const [commentInput, setCommentInput] = useState<string>('');
+    const [userName, setUserName] =  useState<string>('');
 
     const fetchLikes = async () => {
         const likes = await FirestoreService.getInstance().getLikes(groupId!, weekId!, entry.id);
@@ -46,6 +46,15 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
         fetchLikes();
         fetchComments();
     };
+
+    const fetchUser = async () => {
+        const user = await FirestoreService.getInstance().getUser(entry.userId);
+        setUserName(user?.name);
+    };
+
+    useEffect(() => {
+        fetchUser();
+    }, [entry]);
 
 
     useEffect(() => {

@@ -43,7 +43,6 @@ const Week = ({ groupId, weekId, user, fetchHasEntryThisWeek, refreshContent }: 
           fetchHasEntryThisWeek={fetchHasEntryThisWeek}
           groupId={groupId}
           weekId={weekId}
-          userName={user.displayName}
         />))}
     </>
   );

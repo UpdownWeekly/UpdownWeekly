@@ -56,9 +56,9 @@ const MainContent = ({ activeGroup, user }: { activeGroup: Group | null, user: U
     <div className='content w-full p-4 space-y-4'>
       <div className='content-container space-y-8'>
         <div className='flex justify-center w-full'>
-          <h1 className='text-2xl font-bold'>{activeGroup?.name}</h1>
+          {activeGroup ? <h1 className='text-2xl font-bold'>{activeGroup.name}</h1> : <h1 className='text-2xl font-bold'>No Group Selected</h1>}
         </div>
-        {!hasEntryThisWeek && (
+        {activeGroup && !hasEntryThisWeek && (
           <Card>
             <CardHeader>
               <CardTitle className="text-center">New Entry</CardTitle>

@@ -10,6 +10,7 @@ import {
   query,
   setDoc,
   Timestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { db } from "../firebase";
@@ -148,6 +149,40 @@ class FirestoreService {
     return likes as Like[];
   }
 
+  async addMemberToGroup(groupId: string, email: string) {
+    console.log("addMemberToGroup function started");
+    const usersCollection = collection(db, "users");
+    const userQuery = query(usersCollection, where("email", "==", email));
+    const userSnapshot = await getDocs(userQuery);
+    const user = userSnapshot.docs[0];
+    if (!user) {
+      console.log("User not found");
+      throw new Error("User not found");
+    }
+    const userId = user.id;
+    console.log(`User found: ${userId}`);
+
+    const groupRef = doc(db, "groups", groupId);
+    const groupDoc = await getDoc(groupRef);
+
+    if (groupDoc.exists()) {
+      console.log("Group found");
+      const groupData = groupDoc.data();
+      if (!groupData.members[userId]) {
+        groupData.members[userId] = {
+          role: "member",
+          user_id: userId,
+        };
+        await updateDoc(groupRef, { members: groupData.members });
+        console.log("Member added to group");
+      } else {
+        throw new Error("Member already exists in the group");
+      }
+    } else {
+      console.log("Group not found");
+    }
+  }
+
   async getComments(groupId: string, weekId: string, entryId: string) {
     const commentsCollection = collection(
       db,
@@ -230,10 +265,15 @@ class FirestoreService {
 
     if (!likeSnapshot.empty) {
       const likeDoc = likeSnapshot.docs[0];
-      await deleteDoc(doc(db, `groups/${groupId}/weeks/${weekId}/entries/${entryId}/likes`, likeDoc.id));
+      await deleteDoc(
+        doc(
+          db,
+          `groups/${groupId}/weeks/${weekId}/entries/${entryId}/likes`,
+          likeDoc.id,
+        ),
+      );
     }
   }
-
 
   async userMadeEntryThisWeek(groupId: string, userId: string) {
     // Get the current week
@@ -348,8 +388,6 @@ class FirestoreService {
     await addDoc(entriesCollection, entry);
     console.log("Entry added successfully.");
   }
-
-
 }
 
 export type Group = {

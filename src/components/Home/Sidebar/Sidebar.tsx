@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { Trash } from 'lucide-react';
+import { Plus, Trash } from 'lucide-react';
 import React from 'react';
 import { DialogClose } from '@radix-ui/react-dialog';
 
@@ -26,8 +26,18 @@ type SidebarProps = {
 };
 
 const Sidebar = ({ user, activeGroup, setActiveGroup }: SidebarProps) => {
+
     const [groups, setGroups] = useState<Group[]>([]);
     const [newGroupName, setNewGroupName] = useState('');
+    const [openDropDownMenu, setOpenDropDownMenu] = useState('');
+
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [addGroupDialogOpen, setAddGroupDialogOpen] = useState(false);
+
+    const [groupToDelete, setGroupToDelete] = useState<Group | null>(null);
+    const [groupToAddMember, setGroupToAddMember] = useState<Group | null>(null);
+
+
 
     const handleInputChange = (event: { target: { value: SetStateAction<string>; }; }) => {
         setNewGroupName(event.target.value);
@@ -35,6 +45,7 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: SidebarProps) => {
 
     const handleClick = (group: Group) => {
         setActiveGroup(group);
+        localStorage.setItem('activeGroup', JSON.stringify(group));
     };
 
     const fetchGroups = async () => {
@@ -55,6 +66,10 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: SidebarProps) => {
 
     useEffect(() => {
         fetchGroups();
+        const storedActiveGroup = localStorage.getItem('activeGroup');
+        if (storedActiveGroup) {
+            setActiveGroup(JSON.parse(storedActiveGroup));
+        }
     }, [user]);
 
     const onCreateGroup = async () => {
@@ -65,6 +80,39 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: SidebarProps) => {
         }
     };
 
+    const [email, setEmail] = useState('');
+    const [emailError, setEmailError] = useState('');
+
+
+    const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setEmail(event.target.value);
+    };
+
+    const validateEmail = (email: string) => {
+        const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+        return regex.test(email);
+    };
+
+    const handleAddMember = async (event: React.FormEvent, groupId: string) => {
+        event.preventDefault();
+        if (!validateEmail(email)) {
+            setEmailError('This email is not valid');
+        } else {
+            setEmailError('');
+            try {
+                await FirestoreService.getInstance().addMemberToGroup(groupId, email)
+                setAddGroupDialogOpen(false);
+            } catch (e) {
+                if (e instanceof Error) {
+                    setEmailError(e.message);
+                } else {
+                    setEmailError('An unexpected error occurred');
+                }
+            }
+            // Add member to group...
+        }
+    };
+
     return (
         <div className="w-full p-4">
             <div className='flex flex-col space-y-2'>
@@ -72,17 +120,22 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: SidebarProps) => {
                     <React.Fragment key={group.id}>
                         <div className='flex w-full'>
                             <Button style={{ justifyContent: 'flex-start' }} className={`flex-grow ${activeGroup?.id === group.id ? "bg-accent text-accent-foreground" : ""}`} variant="ghost" onClick={() => handleClick(group)}>{group.name}</Button>
-                            <Dialog>
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger><DotsVerticalIcon></DotsVerticalIcon></DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                        <DropdownMenuLabel>{group.name}</DropdownMenuLabel>
-                                        <DropdownMenuSeparator />
-                                        <DialogTrigger asChild>
-                                            <DropdownMenuItem> <Trash className="mr-2 h-4 w-4" /> delete</DropdownMenuItem>
-                                        </DialogTrigger>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
+
+                            <DropdownMenu open={openDropDownMenu == group.id} onOpenChange={() => { setOpenDropDownMenu(''); setEmail(''); setEmailError(''); }}>
+                                <DropdownMenuTrigger><DotsVerticalIcon onClick={() => setOpenDropDownMenu(group.id)}></DotsVerticalIcon></DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuLabel>{group.name}</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onSelect={() => { setOpenDropDownMenu(''); setDeleteDialogOpen(true); setGroupToDelete(group); }}>
+                                        <Trash className="mr-2 h-4 w-4" /> Delete
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => { setOpenDropDownMenu(''); setAddGroupDialogOpen(true); setGroupToAddMember(group); setEmail(''); setEmailError(''); }}>
+                                        <Plus className="mr-2 h-4 w-4" /> Add Member
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+
+                            <Dialog open={deleteDialogOpen} onOpenChange={() => setDeleteDialogOpen(false)}>
                                 <DialogContent>
                                     <DialogHeader>
                                         <DialogTitle>Are you sure absolutely sure?</DialogTitle>
@@ -92,8 +145,32 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: SidebarProps) => {
                                         </DialogDescription>
                                     </DialogHeader>
                                     <DialogFooter>
-                                        <Button type="submit" onClick={() => deleteGroup(group)}>Confirm</Button>
-                                    </DialogFooter>
+                                        <Button type="submit" onClick={() => groupToDelete && deleteGroup(groupToDelete)}>Confirm</Button>                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+
+                            <Dialog open={addGroupDialogOpen} onOpenChange={() => setAddGroupDialogOpen(false)}>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Add members to {group.name}</DialogTitle>
+                                        <form onSubmit={async (e) =>  { 
+                                            if (groupToAddMember)  {
+                                                await handleAddMember(e, groupToAddMember.id);
+                                            }
+                                        }}>
+                                            <Input
+                                                type="email"
+                                                value={email}
+                                                onChange={handleEmailChange}
+                                                placeholder='Provide a valid E-Mail of a user...'
+                                            />
+                                            {emailError && <span>{emailError}</span>}
+                                            <DialogFooter>
+                                                <Button type="submit">Add Member</Button>
+                                            </DialogFooter>
+                                        </form>
+
+                                    </DialogHeader>
                                 </DialogContent>
                             </Dialog>
                         </div>
@@ -126,3 +203,4 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: SidebarProps) => {
 };
 
 export default Sidebar;
+
