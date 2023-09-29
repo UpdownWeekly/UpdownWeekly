@@ -31,8 +31,8 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
     const [likes, setLikes] = useState<Like[]>([]);
     const [comments, setComments] = useState<Comment[]>([]);
     const [commentInput, setCommentInput] = useState<string>('');
-    const [userName, setUserName] =  useState<string>('');
-    const [userPhotoUrl, setUserPhotoUrl] =  useState<string>('');
+    const [userName, setUserName] = useState<string>('');
+    const [userPhotoUrl, setUserPhotoUrl] = useState<string>('');
 
 
     const fetchLikes = async () => {
@@ -67,7 +67,8 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
 
     const handleCommentSubmit = async () => {
         if (commentInput !== '') {
-            await FirestoreService.getInstance().createComment(groupId!, weekId!, entry.id, user.uid, commentInput);
+            await FirestoreService.getInstance()
+                .createComment(groupId!, weekId!, entry.id, user.uid, user.displayName ?? 'anonymous', commentInput);
             setCommentInput('');
             fetchComments();
         }
@@ -80,13 +81,12 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
                     <CardHeader className="flex items-center">
                         <CardTitle className="w-full flex justify-between items-center">
                             <div className='flex items-center space-x-2'>
-                            <Avatar>
-                                <AvatarImage src={userPhotoUrl}></AvatarImage>
-                                <AvatarFallback style={{color: 'black'}}>{userName ? userName[0].toUpperCase() : ''}</AvatarFallback>
-                            </Avatar>
-                            <p>{userName}</p>
+                                <Avatar>
+                                    <AvatarImage src={userPhotoUrl}></AvatarImage>
+                                    <AvatarFallback style={{ color: 'black' }}>{userName ? userName[0].toUpperCase() : ''}</AvatarFallback>
+                                </Avatar>
+                                <p>{userName}</p>
                             </div>
-                          
                             {entry.userId === user.uid &&
                                 <Button variant={'ghost'} onClick={async () => {
                                     await FirestoreService.getInstance().deleteEntry(groupId!, weekId!, entry.id);
@@ -133,7 +133,7 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
                         <div className='w-full flex items-start'>
                             <Accordion type="single" collapsible className='flex-grow'>
                                 <AccordionItem value="item-1" className='w-full'>
-                                    <AccordionTrigger>Comments</AccordionTrigger>
+                                    <AccordionTrigger>Comments ({comments.length})</AccordionTrigger>
                                     <AccordionContent>
                                         {comments.map((comment, index) => (
                                             <React.Fragment key={comment.createdAt.toLocaleTimeString()}>
@@ -141,7 +141,7 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
                                                     <CommentComponent comment={comment} />
                                                 </div>
                                             </React.Fragment>))}
-                                        <div className='flex'>
+                                        <div className='flex mt-4'>
                                             <Input type='text' className='focus-visible:ring-0' value={commentInput} onChange={(e) => setCommentInput(e.target.value)} placeholder='Add a comment...' />
                                             <Button variant={'ghost'} onClick={handleCommentSubmit}><Send></Send></Button>
                                         </div>

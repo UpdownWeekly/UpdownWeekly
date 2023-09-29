@@ -219,6 +219,7 @@ class FirestoreService {
       const data = doc.data();
       return {
         userId: data.user_id,
+        userName: data.user_name,
         text: data.text,
         createdAt: data.created_at.toDate(),
       };
@@ -232,10 +233,12 @@ class FirestoreService {
     weekId: string,
     entryId: string,
     userId: string,
+    userName: string,
     text: string,
   ) {
     const comment = {
       user_id: userId,
+      user_name: userName,
       text: text,
       created_at: new Date(),
     };
@@ -432,6 +435,7 @@ export type Entry = {
 
 export type Comment = {
   userId: string;
+  userName: string;
   text: string;
   createdAt: Date;
 };

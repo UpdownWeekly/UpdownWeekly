@@ -1,26 +1,14 @@
-import FirestoreService, { Comment } from '@/services/firestore-service';
-import React, { useEffect, useState } from 'react';
+import { Comment } from '@/services/firestore-service';
 
 type CommentProps = {
-   comment: Comment;
+    comment: Comment;
 }
 
 const CommentComponent: React.FC<CommentProps> = (props) => {
 
-    const [userName, setUserName] = useState("");
-
-    useEffect(() => {
-        const fetchUserName = async () => {
-            const user = await FirestoreService.getInstance().getUser(props.comment.userId);
-            setUserName(user?.name);
-        };
-        fetchUserName();
-    }, [props.comment]);
-
-
     return (
         <div>
-            {userName}: {props.comment.text} ({props.comment.createdAt.toLocaleTimeString()})
+            <span className="font-semibold">{props.comment.userName ?? 'anonymous'}</span>: {props.comment.text} <span className="text-gray-500">({props.comment.createdAt.toLocaleTimeString()})</span>
         </div>
     );
 };
