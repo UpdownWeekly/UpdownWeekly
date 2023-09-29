@@ -1,4 +1,4 @@
-import { useState, useEffect, SetStateAction } from 'react';
+import { useState, useEffect, SetStateAction, memo } from 'react';
 import { User } from 'firebase/auth';
 import FirestoreService, { Group } from '@/services/firestore-service';
 import { Button } from '@/components/ui/button';
@@ -21,13 +21,14 @@ import { DialogClose } from '@radix-ui/react-dialog';
 
 type SidebarProps = {
     user: User,
+    groups: Group[],
+    fetchGroups: () => Promise<void>,
     activeGroup: Group | null,
     setActiveGroup: (group: Group) => void
 };
 
-const Sidebar = ({ user, activeGroup, setActiveGroup }: SidebarProps) => {
+const Sidebar = ({ user, groups, fetchGroups, activeGroup, setActiveGroup }: SidebarProps) => {
 
-    const [groups, setGroups] = useState<Group[]>([]);
     const [newGroupName, setNewGroupName] = useState('');
     const [openDropDownMenu, setOpenDropDownMenu] = useState('');
 
@@ -48,13 +49,7 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: SidebarProps) => {
         localStorage.setItem('activeGroup', JSON.stringify(group));
     };
 
-    const fetchGroups = async () => {
-        if (user != null) {
-            const firestoreService = FirestoreService.getInstance();
-            const groups = await firestoreService.getGroups(user.uid);
-            setGroups(groups)
-        }
-    }
+
 
     const deleteGroup = async (group: Group) => {
         if (user != null) {
@@ -64,13 +59,7 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: SidebarProps) => {
         }
     }
 
-    useEffect(() => {
-        fetchGroups();
-        const storedActiveGroup = localStorage.getItem('activeGroup');
-        if (storedActiveGroup) {
-            setActiveGroup(JSON.parse(storedActiveGroup));
-        }
-    }, [user]);
+
 
     const onCreateGroup = async () => {
         const firestoreService = FirestoreService.getInstance();
@@ -202,5 +191,5 @@ const Sidebar = ({ user, activeGroup, setActiveGroup }: SidebarProps) => {
     );
 };
 
-export default Sidebar;
+export default memo(Sidebar);
 
