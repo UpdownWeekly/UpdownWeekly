@@ -38,7 +38,12 @@ class FirestoreService {
     await deleteDoc(entryRef);
   }
 
-  async createUser(uid: string, displayName: string, email: string, photoUrl: string | null) {
+  async createUser(
+    uid: string,
+    displayName: string,
+    email: string,
+    photoUrl: string | null,
+  ) {
     const userRef = doc(db, "users", uid);
     const userDoc = await getDoc(userRef);
 
@@ -74,7 +79,16 @@ class FirestoreService {
     const _collection = collection(db, "groups", groupId, "weeks");
     const _query = query(_collection);
     const querySnapshot = await getDocs(_query);
-    const weeks = querySnapshot.docs.map((doc) => doc.id);
+
+    const weeks = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        startDate: data.start_date.toDate(),
+        endDate: data.end_date.toDate(),
+      } as Week;
+    });
+
     return weeks;
   }
 
@@ -151,7 +165,12 @@ class FirestoreService {
       `groups/${groupId}/weeks/${weekId}/entries/${entryId}/likes`,
     );
     const likesSnapshot = await getDocs(likesCollection);
-    const likes = likesSnapshot.docs.map((doc) => doc.data());
+    const likes = likesSnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        userId: data.user_id,
+      };
+    });
 
     return likes as Like[];
   }
@@ -343,10 +362,20 @@ class FirestoreService {
     const startOfCurrentWeek = new Date(
       now.getFullYear(),
       now.getMonth(),
-      now.getDate() - now.getDay(),
+      now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1),
+      0, 0, 0, 0
     );
     const startOfLastWeek = new Date(
-      startOfCurrentWeek.getTime() - 7 * 24 * 60 * 60 * 1000,
+      startOfCurrentWeek.getFullYear(),
+      startOfCurrentWeek.getMonth(),
+      startOfCurrentWeek.getDate() - 7,
+      0, 0, 0, 0
+    );
+    const endOfLastWeek = new Date(
+      startOfLastWeek.getFullYear(),
+      startOfLastWeek.getMonth(),
+      startOfLastWeek.getDate() + 6,
+      23, 59, 59, 999
     );
 
     const weekCollection = collection(db, `groups/${groupId}/weeks`);
@@ -363,27 +392,18 @@ class FirestoreService {
       weekSnapshot.empty ||
       weekSnapshot.docs[0].data().start_date.toDate() < startOfLastWeek
     ) {
-      console.log(
-        "No week found or the newest week is not the last week, creating a new week...",
-      );
       const newWeekRef = doc(weekCollection);
       weekId = newWeekRef.id;
       await setDoc(newWeekRef, {
         start_date: startOfLastWeek,
-        end_date: new Date(
-          startOfLastWeek.getFullYear(),
-          startOfLastWeek.getMonth(),
-          startOfLastWeek.getDate() + 7,
-        ),
+        end_date: endOfLastWeek,
       });
       console.log("New week created with id: ", weekId);
     } else {
-      console.log("The newest week is the last week, using it as weekId...");
       weekId = weekSnapshot.docs[0].id;
       console.log("Week id: ", weekId);
     }
 
-    console.log("Adding entry to the entries collection...");
     const entriesCollection = collection(
       db,
       "groups",
@@ -393,7 +413,6 @@ class FirestoreService {
       "entries",
     );
     await addDoc(entriesCollection, entry);
-    console.log("Entry added successfully.");
   }
 }
 
@@ -411,17 +430,19 @@ export type Entry = {
 };
 
 export type Comment = {
-  user_id: string;
+  userId: string;
   text: string;
   created_at: Date;
 };
 
 export type Like = {
-  user_id: string;
+  userId: string;
 };
 
 export type Week = {
-  user_id: string;
+  id: string;
+  startDate: Date;
+  endDate: Date;
 };
 
 export default FirestoreService;

@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import FirestoreService, { Entry } from '@/services/firestore-service';
+import FirestoreService, { Entry, Week } from '@/services/firestore-service';
 import { User } from 'firebase/auth';
 import EntryComponent from './Entry/Entry';
 
-const Week = ({ groupId, weekId, user, fetchHasEntryThisWeek, refreshContent }: { groupId: string | null, weekId: string | null, user: User, fetchHasEntryThisWeek: () => Promise<void>, refreshContent: boolean }) => {
+const WeekComponent = ({ groupId, week, user, fetchHasEntryThisWeek, refreshContent }: { groupId: string | null, week: Week, user: User, fetchHasEntryThisWeek: () => Promise<void>, refreshContent: boolean }) => {
 
+  
   const [entries, setEntries] = useState<Entry[]>([]);
   const [refreshEntries, setRefreshEntries] = useState(false);
-
 
   useEffect(() => {
     const fetchEntries = async () => {
       try {
-        const entries = await FirestoreService.getInstance().getEntriesPerWeek(groupId!, weekId!);
+        const entries = await FirestoreService.getInstance().getEntriesPerWeek(groupId!, week.id);
         const users: { [key: string]: { name: string } } = {};
 
         for (const entry of entries) {
@@ -30,10 +30,11 @@ const Week = ({ groupId, weekId, user, fetchHasEntryThisWeek, refreshContent }: 
     };
     console.log("fetching entries")
     fetchEntries();
-  }, [weekId, refreshEntries, refreshContent]);
+  }, [week, refreshEntries, refreshContent]);
 
   return (
     <>
+      {entries.length > 0 && <h1>Week: {week.startDate.toLocaleDateString()} - {week.endDate.toLocaleDateString()}</h1>}
       {entries.map((entry) => (
         <EntryComponent
           key={entry.id}
@@ -42,10 +43,10 @@ const Week = ({ groupId, weekId, user, fetchHasEntryThisWeek, refreshContent }: 
           setRefreshEntries={setRefreshEntries}
           fetchHasEntryThisWeek={fetchHasEntryThisWeek}
           groupId={groupId}
-          weekId={weekId}
+          weekId={week.id}
         />))}
     </>
   );
 };
 
-export default Week;
+export default WeekComponent;

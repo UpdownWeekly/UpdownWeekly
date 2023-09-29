@@ -11,7 +11,7 @@ const CommentComponent: React.FC<CommentProps> = (props) => {
 
     useEffect(() => {
         const fetchUserName = async () => {
-            const user = await FirestoreService.getInstance().getUser(props.comment.user_id);
+            const user = await FirestoreService.getInstance().getUser(props.comment.userId);
             setUserName(user?.name);
         };
         fetchUserName();

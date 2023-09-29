@@ -14,9 +14,11 @@ const LikeComponent: React.FC<LikeProps> = (props) => {
 
     useEffect(() => {
         const fetchUserName = async () => {
-            const user = await FirestoreService.getInstance().getUser(props.like.user_id);
-            setUserName(user?.name);
-            setUserPhotoUrl(user?.photoUrl);
+            if (props.like && props.like.userId) {
+                const user = await FirestoreService.getInstance().getUser(props.like.userId);
+                setUserName(user?.name);
+                setUserPhotoUrl(user?.photoUrl);
+            }
         };
         fetchUserName();
     }, [props.like]);
@@ -26,7 +28,7 @@ const LikeComponent: React.FC<LikeProps> = (props) => {
         <div>
             <HoverCard>
                 <HoverCardTrigger>
-                    <Avatar>
+                    <Avatar className='h-7 w-7'>
                         <AvatarImage src={userPhotoUrl}></AvatarImage>
                         <AvatarFallback style={{ color: 'black' }}>{userName ? userName[0].toUpperCase() : ''}</AvatarFallback>
                     </Avatar>

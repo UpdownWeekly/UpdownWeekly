@@ -1,17 +1,18 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
-import FirestoreService, { Group } from '../../../services/firestore-service';
+import FirestoreService, { Group, Week } from '../../../services/firestore-service';
 import { useState, useEffect } from 'react';
-import Week from './Week/Week';
+import WeekComponent from './Week/Week';
 import { Textarea } from '@/components/ui/textarea';
 import { User } from 'firebase/auth';
 import { Send } from 'lucide-react';
+import React from 'react';
 
 const firestoreService = FirestoreService.getInstance();
 
 const MainContent = ({ activeGroup, user }: { activeGroup: Group | null, user: User }) => {
 
-  const [weeks, setWeeks] = useState<string[] | null>(null);
+  const [weeks, setWeeks] = useState<Week[]>();
   const [hasEntryThisWeek, setHasEntryThisWeek] = useState(false);
   const [highlight, setHighlight] = useState('');
   const [lowlight, setLowlight] = useState('');
@@ -76,14 +77,17 @@ const MainContent = ({ activeGroup, user }: { activeGroup: Group | null, user: U
                 </div>
               </div>
               <div className='flex justify-end mt-4 w-full'>
-                <Button id='send-button' variant={'ghost'} onClick={handleSend}><Send/></Button>
+                <Button id='send-button' variant={'ghost'} onClick={handleSend}><Send /></Button>
               </div>
             </CardContent>
           </Card>
         )}
       </div>
-      {weeks?.map((weekId) => (
-        <Week key={weekId} groupId={activeGroup?.id!} weekId={weekId} user={user} fetchHasEntryThisWeek={fetchHasEntryThisWeek} refreshContent={refreshContent}/>      ))}
+      {weeks?.map((week) => (
+        <React.Fragment key={week.id}>
+          <WeekComponent groupId={activeGroup?.id!} week={week} user={user} fetchHasEntryThisWeek={fetchHasEntryThisWeek} refreshContent={refreshContent} />
+        </React.Fragment>
+      ))}
     </div>
   );
 }

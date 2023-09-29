@@ -113,13 +113,13 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
                         <div className='w-full flex items-center justify-end'>
                             <div className="flex h-5 items-center space-x-1 text-sm">
                                 {likes.map((like) => (
-                                    <React.Fragment key={like.user_id}>
+                                    <React.Fragment key={like.userId}>
                                         <LikeComponent like={like} />
                                     </React.Fragment>
                                 ))}
                             </div>
                             <Button variant={'ghost'} onClick={async () => {
-                                if (!likes.some(like => like.user_id === user.uid)) {
+                                if (!likes.some(like => like.userId === user.uid)) {
                                     await FirestoreService.getInstance().createLike(groupId!, weekId!, entry.id, user.uid);
                                     fetchLikes();
 
@@ -127,7 +127,7 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
                                     await FirestoreService.getInstance().removeLike(groupId!, weekId!, entry.id, user.uid);
                                     fetchLikes();
                                 }
-                            }}>{likes.some(like => like.user_id === user.uid) ? <HeartOff /> : <Heart />}</Button>
+                            }}>{likes.some(like => like.userId === user.uid) ? <HeartOff /> : <Heart />}</Button>
                         </div>
 
                         <div className='w-full flex items-start'>
