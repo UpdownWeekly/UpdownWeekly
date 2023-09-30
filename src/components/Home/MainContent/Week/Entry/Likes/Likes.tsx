@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import FirestoreService, { Like } from '@/services/firestore-service';
 import React, { useEffect, useState } from 'react';
 
@@ -23,20 +23,21 @@ const LikeComponent: React.FC<LikeProps> = (props) => {
         fetchUserName();
     }, [props.like]);
 
-
     return (
         <div>
-            <HoverCard>
-                <HoverCardTrigger>
-                    <Avatar className='h-7 w-7'>
-                        <AvatarImage src={userPhotoUrl}></AvatarImage>
-                        <AvatarFallback style={{ color: 'black' }}>{userName ? userName[0].toUpperCase() : ''}</AvatarFallback>
-                    </Avatar>
-                    <HoverCardContent>
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Avatar className='h-6 w-6'>
+                            <AvatarImage src={userPhotoUrl}></AvatarImage>
+                            <AvatarFallback style={{ color: 'black' }}>{userName ? userName[0].toUpperCase() : ''}</AvatarFallback>
+                        </Avatar>
+                    </TooltipTrigger>
+                    <TooltipContent>
                         {userName}
-                    </HoverCardContent>
-                </HoverCardTrigger>
-            </HoverCard>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
         </div>
     );
 };
