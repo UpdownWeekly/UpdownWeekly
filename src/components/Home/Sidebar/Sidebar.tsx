@@ -116,7 +116,7 @@ const Sidebar = ({ user, groups, fetchGroups, activeGroup, setActiveGroup }: Sid
                             <Button style={{ justifyContent: 'flex-start' }} className={`flex-grow ${activeGroup?.id === group.id ? "bg-accent text-accent-foreground" : ""}`} variant="ghost" onClick={() => handleClick(group)}>{group.name}</Button>
 
                             <DropdownMenu open={openDropDownMenu == group.id} onOpenChange={() => { setOpenDropDownMenu(''); setEmail(''); setEmailError(''); }}>
-                                <DropdownMenuTrigger><DotsVerticalIcon onClick={() => setOpenDropDownMenu(group.id)}></DotsVerticalIcon></DropdownMenuTrigger>
+                                <DropdownMenuTrigger><Button className='p-2 hover:bg-transparent' variant={'ghost'}><DotsVerticalIcon onClick={() => setOpenDropDownMenu(group.id)}></DotsVerticalIcon></Button></DropdownMenuTrigger>
                                 <DropdownMenuContent>
                                     <DropdownMenuLabel>{group.name}</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
