@@ -54,7 +54,7 @@ const MainContent = ({ activeGroup, user }: { activeGroup: Group | null, user: U
 
 
   return (
-    <div className='content w-full p-4 space-y-4'>
+    <div className='content max-w-[800px] p-4 space-y-4'>
       <div className='content-container space-y-8'>
         <div className='flex justify-center w-full'>
           {activeGroup ? <h1 className='text-2xl font-bold'>{activeGroup.name}</h1> : <h1 className='text-2xl font-bold'>No Group Selected</h1>}

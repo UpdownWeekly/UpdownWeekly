@@ -34,7 +34,11 @@ const WeekComponent = ({ groupId, week, user, fetchHasEntryThisWeek, refreshCont
 
   return (
     <>
-      {entries.length > 0 && <h1>Week: {week.startDate.toLocaleDateString()} - {week.endDate.toLocaleDateString()}</h1>}
+    <div style={{display: 'flex', alignItems: 'center'}}>
+    <hr style={{flexGrow: 1, borderColor: 'lightgrey'}} />
+      {entries.length > 0 && <h1 style={{margin: '0 10px'}}>Week: {week.startDate.toLocaleDateString()} - {week.endDate.toLocaleDateString()}</h1>}
+      <hr style={{flexGrow: 1, borderColor: 'lightgrey'}} />
+    </div>
       {entries.map((entry) => (
         <EntryComponent
           key={entry.id}

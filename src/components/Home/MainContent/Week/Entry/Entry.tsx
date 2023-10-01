@@ -77,7 +77,7 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
 
     return (
         <>
-            <div className="relative" key={entry.id}>
+            <div key={entry.id}>
                 <Card>
                     <CardHeader className="flex items-center">
                         <CardTitle className="w-full flex justify-between items-center">
