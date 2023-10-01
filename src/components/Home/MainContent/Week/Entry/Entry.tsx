@@ -2,8 +2,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import FirestoreService, { Comment, Entry, Like } from '@/services/firestore-service';
 
 import { Button } from '@/components/ui/button';
-import { User } from 'firebase/auth';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import CommentComponent from './Comment/Comment';
 import LikeComponent from './Likes/Likes';
 import React from 'react';
@@ -17,23 +16,26 @@ import {
 } from "@/components/ui/accordion"
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { UserContext } from '@/App';
 
 interface EntryComponentProps {
     entry: Entry;
-    user: User;
     setRefreshEntries: React.Dispatch<React.SetStateAction<boolean>>;
     fetchHasEntryThisWeek: () => Promise<void>;
     groupId: string | null;
     weekId: string | null;
 }
 
-const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek, groupId, weekId }: EntryComponentProps) => {
+const EntryComponent = ({ entry, setRefreshEntries, fetchHasEntryThisWeek, groupId, weekId }: EntryComponentProps) => {
 
     const [likes, setLikes] = useState<Like[]>([]);
     const [comments, setComments] = useState<Comment[]>([]);
     const [commentInput, setCommentInput] = useState<string>('');
     const [userName, setUserName] = useState<string>('');
     const [userPhotoUrl, setUserPhotoUrl] = useState<string>('');
+
+    const user = useContext(UserContext);
+
 
 
     const fetchLikes = async () => {
@@ -67,7 +69,7 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
     }, [entry]);
 
     const handleCommentSubmit = async () => {
-        if (commentInput !== '') {
+        if (commentInput !== '' && user) {
             await FirestoreService.getInstance()
                 .createComment(groupId!, weekId!, entry.id, user.uid, user.displayName ?? 'anonymous', commentInput);
             setCommentInput('');
@@ -91,7 +93,7 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
                                     <span className="text-gray-500 text-xs font-normal">{entry.createdAt && new Date(entry.createdAt.seconds * 1000).toLocaleString()}</span>
                                 </div>
                             </div>
-                            {entry.userId === user.uid &&
+                            {entry.userId === user?.uid &&
                                 <Button className='p-2 hover:bg-transparent' variant={'ghost'} onClick={async () => {
                                     await FirestoreService.getInstance().deleteEntry(groupId!, weekId!, entry.id);
                                     setRefreshEntries(prevState => !prevState); // Toggle refreshEntries state
@@ -126,15 +128,15 @@ const EntryComponent = ({ entry, user, setRefreshEntries, fetchHasEntryThisWeek,
                                 ))}
                             </div>
                             <Button className='p-2 hover:bg-transparent' variant={'ghost'} onClick={async () => {
-                                if (!likes.some(like => like.userId === user.uid)) {
+                                if (!likes.some(like => like.userId === user?.uid) && user) {
                                     await FirestoreService.getInstance().createLike(groupId!, weekId!, entry.id, user.uid);
                                     fetchLikes();
 
-                                } else {
+                                } else if (user) {
                                     await FirestoreService.getInstance().removeLike(groupId!, weekId!, entry.id, user.uid);
                                     fetchLikes();
                                 }
-                            }}><Heart style={likes.some(like => like.userId === user.uid) ? { fill: '#E3474F', stroke: '#E3474F' } : {}} className="transition duration-300 ease-in-out transform hover:scale-110" /></Button>
+                            }}><Heart style={likes.some(like => like.userId === user?.uid) ? { fill: '#E3474F', stroke: '#E3474F' } : {}} className="transition duration-300 ease-in-out transform hover:scale-110" /></Button>
                         </div>
 
                     </CardContent>

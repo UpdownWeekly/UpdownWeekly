@@ -3,8 +3,11 @@ import { User } from 'firebase/auth';
 import LoginComponent from './components/Login/Login';
 import AuthService from './services/auth-service';
 import Home from './components/Home/Home';
+import React from 'react';
+export const UserContext = React.createContext<User | null>(null);
 
 function App() {
+
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -19,7 +22,9 @@ function App() {
     return <LoginComponent />;
   } else {
     return (
-          <Home user={user} />
+      <UserContext.Provider value={user}>
+        <Home />
+      </UserContext.Provider>
     );
   }
 }

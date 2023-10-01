@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import FirestoreService, { Entry, Week } from '@/services/firestore-service';
-import { User } from 'firebase/auth';
 import EntryComponent from './Entry/Entry';
 
-const WeekComponent = ({ groupId, week, user, fetchHasEntryThisWeek, refreshContent }: { groupId: string | null, week: Week, user: User, fetchHasEntryThisWeek: () => Promise<void>, refreshContent: boolean }) => {
+const WeekComponent = ({ groupId, week, fetchHasEntryThisWeek, refreshContent }: { groupId: string | null, week: Week, fetchHasEntryThisWeek: () => Promise<void>, refreshContent: boolean }) => {
 
-  
   const [entries, setEntries] = useState<Entry[]>([]);
   const [refreshEntries, setRefreshEntries] = useState(false);
 
@@ -43,7 +41,6 @@ const WeekComponent = ({ groupId, week, user, fetchHasEntryThisWeek, refreshCont
         <EntryComponent
           key={entry.id}
           entry={entry}
-          user={user}
           setRefreshEntries={setRefreshEntries}
           fetchHasEntryThisWeek={fetchHasEntryThisWeek}
           groupId={groupId}

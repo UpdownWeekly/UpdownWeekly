@@ -311,10 +311,12 @@ class FirestoreService {
     const startOfCurrentWeek = new Date(
       now.getFullYear(),
       now.getMonth(),
-      now.getDate() - now.getDay(),
+      now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1),
     );
     const startOfLastWeek = new Date(
-      startOfCurrentWeek.getTime() - 7 * 24 * 60 * 60 * 1000,
+      startOfCurrentWeek.getFullYear(),
+      startOfCurrentWeek.getMonth(),
+      startOfCurrentWeek.getDate() - 7,
     );
 
     // Query for the newest week
