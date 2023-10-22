@@ -10,6 +10,7 @@ import React from 'react';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { UserContext } from '@/App';
 import { ActiveGroupContext } from '../Home';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 type SidebarProps = {
     groups: Group[],
@@ -44,20 +45,23 @@ const Sidebar = ({ groups, fetchGroups }: SidebarProps) => {
 
     return (
 
-        <div className="w-full p-4">
+        <div className="w-full pl-0 p-4">
             <div className='flex flex-col space-y-2'>
                 {groups.map((group) => (
                     <React.Fragment key={group.id}>
                         <div className='flex w-full'>
-                            <Button style={{ justifyContent: 'flex-start' }} className={`flex-grow ${activeGroup?.id === group.id ? "bg-accent text-accent-foreground" : ""}`} variant="ghost" onClick={() => handleClick(group)}>{group.name}</Button>
-
+                            <Button className={`flex flex-grow justify-start text-lg h-12 rounded-tl-none rounded-bl-none ${activeGroup?.id === group.id ? "bg-accent text-accent-foreground" : ""}`} variant="ghost" onClick={() => handleClick(group)}>  <Avatar className='mr-4'>
+                                <AvatarFallback></AvatarFallback>
+                            </Avatar> 
+                            {group.name.length > 15 ? group.name.substring(0, 15) + "..." : group.name}
+                            </Button>
                         </div>
                         <Separator></Separator>
                     </React.Fragment>
                 ))}
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button><PlusIcon></PlusIcon></Button>
+                        <Button style={{ borderTopLeftRadius: '0', borderBottomLeftRadius: '0'}}><PlusIcon></PlusIcon></Button>
                     </DialogTrigger>
                     <DialogContent>
                         <DialogHeader>

@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
 import FirestoreService, { Week } from '../../../services/firestore-service';
 import { useState, useEffect, useContext } from 'react';
@@ -50,51 +50,49 @@ const MainContent = () => {
   useEffect(() => {
     if (activeGroup) {
       firestoreService.getWeeks(activeGroup.id)
-        .then((weeks) => setWeeks(weeks))
+        .then((weeks) => {
+          weeks.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()); console.log("Weeks: ", weeks);
+          setWeeks(weeks);
+        })
         .catch((error) => console.error(error));
     }
   }, [activeGroup, refreshContent]);
 
   return (
-    <Card className='w-full max-w-[800px] p-4  space-y-4'>
-
-        <CardHeader className='flex justify-center w-full'>
-          <GroupHeader></GroupHeader>
-        </CardHeader>    
-        <CardContent className='space-y-4'>  
-
-          {activeGroup && !hasEntryThisWeek && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-center">New Entry</CardTitle>
-                <CardDescription className="text-center">Share what happened last week.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className='flex flex-col md:flex-row justify-between'>
-                  <div className='w-full md:w-1/2 m-2'>
-                    <h3 className='text-center font-bold mb-2'>Highlight</h3>
-                    <Textarea id='highlight-input' placeholder='Type your highlight...' value={highlight} onChange={(e) => setHighlight(e.target.value)} />
-                  </div>
-                  <div className='w-full md:w-1/2 m-2'>
-                    <h3 className='text-center font-bold mb-2'>Lowlight</h3>
-                    <Textarea id='lowlight-input' placeholder='Type your lowlight...' value={lowlight} onChange={(e) => setLowlight(e.target.value)} />
-                  </div>
+    <Card className='w-full max-w-[800px] p-0 space-y-4 border-t-0 rounded-t-none'>
+      <CardHeader className='flex justify-center w-full'>
+        <GroupHeader></GroupHeader>
+      </CardHeader>
+      <CardContent className='space-y-4 p-0'>
+        {activeGroup && !hasEntryThisWeek && (
+          <Card className='m-4 border-4' style={{background: 'linear-gradient(to bottom right, #E4F7F6, #AFD5DB)'}}>
+            <CardHeader className='mt-4 mb-4'>
+              <CardTitle>Share what happened <b>last</b> week</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className='flex flex-col md:flex-row justify-between'>
+                <div className='w-full md:w-1/2 mr-2'>
+                  <h3 className='font-bold mb-2'>Highlight</h3>
+                  <Textarea id='highlight-input' placeholder='Type your highlight...' value={highlight} onChange={(e) => setHighlight(e.target.value)} />
                 </div>
-                <div className='flex justify-end mt-4 w-full'>
-                  <Button id='send-button' variant={'ghost'} onClick={handleSend}><Send /></Button>
+                <div className='w-full mt-2 md:mt-0 md:w-1/2 md:ml-2'>
+                  <h3 className='font-bold mb-2'>Lowlight</h3>
+                  <Textarea id='lowlight-input' placeholder='Type your lowlight...' value={lowlight} onChange={(e) => setLowlight(e.target.value)} />
                 </div>
-              </CardContent>
-            </Card>
-          )}
-       
+              </div>
+              <div className='flex justify-end mt-4 w-full'>
+                <Button variant={'ghost'} className='p-2 hover:bg-transparent' onClick={handleSend}><Send></Send></Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-   
-      {weeks?.map((week) => (
-        <React.Fragment key={week.id}>
-          <WeekComponent groupId={activeGroup?.id!} week={week} fetchHasEntryThisWeek={fetchHasEntryThisWeek} refreshContent={refreshContent} />
-        </React.Fragment>
-      ))}
-       </CardContent>
+        {weeks?.map((week) => (
+          <React.Fragment key={week.id}>
+            <WeekComponent groupId={activeGroup?.id!} week={week} fetchHasEntryThisWeek={fetchHasEntryThisWeek} refreshContent={refreshContent} />
+          </React.Fragment>
+        ))}
+      </CardContent>
 
     </Card>
   );

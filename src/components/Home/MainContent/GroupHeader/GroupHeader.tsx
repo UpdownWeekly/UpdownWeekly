@@ -18,13 +18,11 @@ import { ActiveGroupContext, FetchGroupsContext } from '../../Home';
 const GroupHeader = () => {
 
     const user = useContext(UserContext);
-    const { activeGroup } = useContext(ActiveGroupContext)
-
+    const { activeGroup, setActiveGroup } = useContext(ActiveGroupContext)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [addGroupDialogOpen, setAddGroupDialogOpen] = useState(false);
-
+    const [dropDownMenuOpen, setDropDownMenuOpen] = useState(false);
     const fetchGroupsContext = useContext(FetchGroupsContext);
-
 
     const deleteGroup = async (group: Group) => {
         if (user != null) {
@@ -32,9 +30,9 @@ const GroupHeader = () => {
             try {
                 await firestoreService.deleteGroup(group.id);
                 fetchGroupsContext?.fetchGroups();
-                setDeleteDialogOpen(false)
+                if (setActiveGroup) setActiveGroup(null);
+                setDeleteDialogOpen(false);
             } catch (error) {
-
             }
 
         }
@@ -42,7 +40,6 @@ const GroupHeader = () => {
 
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
-
 
     const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(event.target.value);
@@ -69,7 +66,6 @@ const GroupHeader = () => {
                     setEmailError('An unexpected error occurred');
                 }
             }
-            // Add member to group...
         }
     };
 
@@ -77,23 +73,23 @@ const GroupHeader = () => {
         <div className='w-full'>
             <div className='flex justify-between w-full'>
                 {activeGroup ? <h1 className='text-2xl font-bold'>{activeGroup.name}</h1> : <h1 className='text-2xl font-bold'>No Group Selected</h1>}
-                <DropdownMenu onOpenChange={() => { setEmail(''); setEmailError(''); }}>
-                    <DropdownMenuTrigger>
+                <DropdownMenu open={dropDownMenuOpen} onOpenChange={() => { setDropDownMenuOpen(false); setEmail(''); setEmailError(''); }}>
+                    <DropdownMenuTrigger onClick={() => setDropDownMenuOpen(true)}>
                         <Settings />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <DropdownMenuLabel>{activeGroup?.name}</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onSelect={() => { setDeleteDialogOpen(true); }}>
+                        <DropdownMenuItem onSelect={() => { setDropDownMenuOpen(false); setDeleteDialogOpen(true); setAddGroupDialogOpen(false); }}>
                             <Trash className="mr-2 h-4 w-4" /> Delete
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => { setAddGroupDialogOpen(true); setEmail(''); setEmailError(''); }}>
+                        <DropdownMenuItem onSelect={() => { setDropDownMenuOpen(false); setAddGroupDialogOpen(false); setAddGroupDialogOpen(true); setEmail(''); setEmailError(''); }}>
                             <Plus className="mr-2 h-4 w-4" /> Add Member
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
-            <Dialog open={deleteDialogOpen} onOpenChange={() => setDeleteDialogOpen(false)}>
+            <Dialog open={deleteDialogOpen} onOpenChange={() => { setDeleteDialogOpen(false); }}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Delete group: {activeGroup?.name}</DialogTitle>
@@ -103,11 +99,12 @@ const GroupHeader = () => {
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button type="submit" onClick={() => activeGroup && deleteGroup(activeGroup)}>delete group</Button>                                    </DialogFooter>
+                        <Button type="submit" onClick={() => activeGroup && deleteGroup(activeGroup)}>delete group</Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 
-            <Dialog open={addGroupDialogOpen} onOpenChange={() => setAddGroupDialogOpen(false)}>
+            <Dialog open={addGroupDialogOpen} onOpenChange={() => { setAddGroupDialogOpen(false); }}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Add members to {activeGroup?.name}</DialogTitle>
@@ -127,7 +124,6 @@ const GroupHeader = () => {
                                 <Button type="submit">Add Member</Button>
                             </DialogFooter>
                         </form>
-
                     </DialogHeader>
                 </DialogContent>
             </Dialog>

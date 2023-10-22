@@ -21,7 +21,7 @@ const Header = () => {
 
   return (
 
-    <header className="bg-blue-500 p-4 text-white flex justify-end">
+    <header className="p-4 text-white flex justify-end" style={{ backgroundColor: '#124051' }}>
       <div className='flex items-center space-x-4'>
         <h2 className='text-lg font-bold'>{user?.displayName}</h2>
         <DropdownMenu>

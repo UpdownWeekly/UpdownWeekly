@@ -79,7 +79,7 @@ const EntryComponent = ({ entry, setRefreshEntries, fetchHasEntryThisWeek, group
 
     return (
         <>
-            <div key={entry.id}>
+            <div key={entry.id} className='p-4'>
                 <Card>
                     <CardHeader className="flex items-center">
                         <CardTitle className="w-full flex justify-between items-center">
@@ -90,7 +90,7 @@ const EntryComponent = ({ entry, setRefreshEntries, fetchHasEntryThisWeek, group
                                 </Avatar>
                                 <div className='flex flex-col'>
                                     <p className='pt-1'>{userName}</p>
-                                    <span className="text-gray-500 text-xs font-normal">{entry.createdAt && new Date(entry.createdAt.seconds * 1000).toLocaleString()}</span>
+                                    <span className="text-gray-500 text-xs font-normal">{entry.createdAt && new Date(entry.createdAt.seconds * 1000).toLocaleString('en-GB')}</span>
                                 </div>
                             </div>
                             {entry.userId === user?.uid &&
@@ -142,14 +142,14 @@ const EntryComponent = ({ entry, setRefreshEntries, fetchHasEntryThisWeek, group
                     </CardContent>
                     <Separator></Separator>
 
-                    <CardFooter className='flex-col pb-0'>
+                    <CardFooter className='flex-col'>
                         <div className='w-full flex items-start'>
                             <Accordion type="single" collapsible className='flex-grow'>
                                 <AccordionItem value="item-1" className='w-full border-b-0'>
                                     <AccordionTrigger className='[&>*:last-child]:mr-2.5 hover:no-underline'>Comments ({comments.length})</AccordionTrigger>
                                     <AccordionContent>
                                         {comments.map((comment, index) => (
-                                            <React.Fragment key={comment.createdAt.toLocaleTimeString()}>
+                                            <React.Fragment key={comment.createdAt.toLocaleTimeString('en-GB')}>
                                                 <div key={index}>
                                                     <CommentComponent comment={comment} />
                                                 </div>
@@ -163,8 +163,6 @@ const EntryComponent = ({ entry, setRefreshEntries, fetchHasEntryThisWeek, group
                             </Accordion>
 
                         </div>
-
-
                     </CardFooter>
                 </Card>
             </div>

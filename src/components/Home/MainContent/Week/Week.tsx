@@ -34,7 +34,7 @@ const WeekComponent = ({ groupId, week, fetchHasEntryThisWeek, refreshContent }:
     <>
     <div style={{display: 'flex', alignItems: 'center'}}>
     <hr style={{flexGrow: 1, borderColor: 'lightgrey'}} />
-      {entries.length > 0 && <h1 style={{margin: '0 10px'}}>Week: {week.startDate.toLocaleDateString()} - {week.endDate.toLocaleDateString()}</h1>}
+      {entries.length > 0 && <h1 style={{margin: '0 10px'}}>Week: {week.startDate.toLocaleDateString('en-GB')} - {week.endDate.toLocaleDateString('en-GB')}</h1>}
       <hr style={{flexGrow: 1, borderColor: 'lightgrey'}} />
     </div>
       {entries.map((entry) => (

@@ -9,7 +9,7 @@ import {
   SheetTrigger,
 } from '../ui/sheet';
 import { Button } from '../ui/button';
-import { SidebarIcon } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { UserContext } from '@/App';
 import React from 'react';
 export const ActiveGroupContext = React.createContext<{ activeGroup: Group | null, setActiveGroup: React.Dispatch<React.SetStateAction<Group | null>> | null }>({ activeGroup: null, setActiveGroup: null });
@@ -70,14 +70,13 @@ const Home = ({ }) => {
   return (
     <ActiveGroupContext.Provider value={{ activeGroup, setActiveGroup }}>
       <FetchGroupsContext.Provider value={{ fetchGroups }}>
-
         < div className="flex flex-col h-screen">
           <Header />
           <div className="flex flex-1">
             <div style={{ display: isMobile ? 'block' : 'none' }}>
-              <Sheet >
+              <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant={null} style={{ position: 'absolute', top: '16px', left: '10px', color: 'white' }}><SidebarIcon></SidebarIcon></Button>
+                  <Button variant={"ghost"} style={{ position: 'absolute', top: '16px', left: '10px', color: 'white' }}><Menu></Menu></Button>
                 </SheetTrigger>
                 <SheetContent className="p-0 pt-8 " side="left">
                   <Sidebar groups={groups} fetchGroups={fetchGroups} />
