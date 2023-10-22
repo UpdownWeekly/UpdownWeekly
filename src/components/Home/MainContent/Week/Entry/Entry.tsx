@@ -95,8 +95,10 @@ const EntryComponent = ({ entry, setRefreshEntries, fetchHasEntryThisWeek, group
                             </div>
                             {entry.userId === user?.uid &&
                                 <Button className='p-2 hover:bg-transparent' variant={'ghost'} onClick={async () => {
-                                    await FirestoreService.getInstance().deleteEntry(groupId!, weekId!, entry.id);
-                                    setRefreshEntries(prevState => !prevState); // Toggle refreshEntries state
+                                    if (window.confirm("Are you sure you want to delete this entry?")) {
+                                        await FirestoreService.getInstance().deleteEntry(groupId!, weekId!, entry.id);
+                                        setRefreshEntries(prevState => !prevState); // Toggle refreshEntries state
+                                    }
                                     fetchHasEntryThisWeek();
                                 }}><Trash /></Button>
                             }
